@@ -2,10 +2,10 @@ import requests
 import os
 import json
 from APIKeys import *
+from url_grabber import get_tweet_from_id
 
 # To set your enviornment variables in your terminal run the following line:
 # export 'BEARER_TOKEN'='<your_bearer_token>'
-# bearer_token = os.environ.get("AAAAAAAAAAAAAAAAAAAAAF9bPQEAAAAAh7AFXYMih%2BCvtvEMSNP2DEgaE5g%3DqNRkRPpMPMyItNSaZlHXWUKg88TgNVkQXlorMACppZ60JpjpVO")
 
 bearer_token = TweepyKeys.bearer_token
 
@@ -94,14 +94,35 @@ def get_stream(set):
         i += 1
     return json_saved
 
+def single_tweet_stream(set):
+    q = []
+    response = requests.get(
+        "https://api.twitter.com/2/tweets/search/stream", auth=bearer_oauth, stream=True,
+    )
+    print(response.status_code)
+    if response.status_code != 200:
+        raise Exception(
+            "Cannot get stream (HTTP {}): {}".format(
+                response.status_code, response.text
+            )
+        )
+    i = 0
+    for response_line in response.iter_lines():
+        if i >= 2:
+            break
+        if response_line:
+            json_response = json.loads(response_line)
+            tweet_data = json_response["data"]
+            tweet_id = tweet_data["id"]
+            json_saved = json.dumps(json_response, indent=4, sort_keys=True)
+        i += 1
+    return str(tweet_id)
 
-
-def main():
+def clean_slate():
     rules = get_rules()
     delete = delete_all_rules(rules)
     set = set_rules(delete)
-    get_stream(set)
+    stream = (single_tweet_stream(set))
+    return get_tweet_from_id(stream)
 
-
-if __name__ == "__main__":
-    main()
+print(clean_slate())
