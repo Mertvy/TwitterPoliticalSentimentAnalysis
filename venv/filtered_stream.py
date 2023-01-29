@@ -55,8 +55,8 @@ def set_rules(delete):
     # You can adjust the rules if needed
     sample_rules = [
         {
-            "value": "context:88.941041031239237632 OR context:35.950465066800881665 OR context:131.847878884917886977 OR context:131.1070032753834438656 OR context:35.1295853707200835584 AND context:131.847878884917886977 -is:retweet -has:links lang:eng",
-            "value": "context:35.875006493984149509 OR context:35.10040395078 OR 131.847878884917886977 OR 131.900740740468191232 OR131.1070032753834438656 -has:links -is:retweet lang:en",
+            "value": "context:88.941041031239237632 OR context:35.950465066800881665 OR context:131.847878884917886977 OR context:131.1070032753834438656 OR context:35.1295853707200835584 AND context:131.847878884917886977 -is:retweet AND -has:links lang:eng",
+            "value": "context:35.875006493984149509 OR context:35.10040395078 OR 131.847878884917886977 OR 131.900740740468191232 OR131.1070032753834438656 -has:links AND -is:retweet AND lang:en",
         }
     ]
     payload = {"add": sample_rules}
