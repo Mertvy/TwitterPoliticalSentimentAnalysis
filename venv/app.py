@@ -1,10 +1,11 @@
 from flask import Flask, request
 import openai
-from TweetClassifier import single_classifier
+from TweetClassifier import few_shotted
 from filtered_stream import clean_slate
+from APIKeys import *
 
 app = Flask(__name__)
-openai.api_key = "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"
+openai.api_key = openaiKeys.key
 
 @app.route("/")
 def index():
@@ -630,7 +631,8 @@ footer .dot {
             <textarea id="prompt"></textarea>
             <button onclick="generateResponse()">Generate Response</button>
             <div id="response"></div>
-            """ + TwitterPostFromJSON(single_classifier(clean_slate())) + """
+            """ + TwitterPostFromJSON(few_shotted(clean_slate())) + """
+            <button class="refresh">CLICK ME</button>
             <script>
               async function generateResponse() {
                 fetch("/response", {
