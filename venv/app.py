@@ -2,9 +2,10 @@ from flask import Flask, request
 import openai
 from TweetClassifier import single_classifier
 from filtered_stream import clean_slate
+from APIKeys import *
 
 app = Flask(__name__)
-openai.api_key = "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"
+openai.api_key = openaiKeys.key
 
 @app.route("/")
 def index():
