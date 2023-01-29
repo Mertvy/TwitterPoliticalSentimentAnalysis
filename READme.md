@@ -42,7 +42,7 @@ Build a program that facilitates deliberation and decision-making among resident
 
 <div align="center"style="font-size:30px;">
 
-![Product Doc Board](/Assets/Product_doc_board-1.png "Product Doc Board")
+![Product Doc Board](/Assets/Product_Doc_Board-1.png "Product Doc Board")
 
 </div>
 
