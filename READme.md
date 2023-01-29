@@ -46,6 +46,11 @@ Build a program that facilitates deliberation and decision-making among resident
 
 </div>
 
+<div align="center"style="font-size:30px;">
+
+![BluCheck Site Sample](/Assets/BluCheck.png "BluCheck Site Sample")
+
+</div>
 ---
 
 ###### Citations:
