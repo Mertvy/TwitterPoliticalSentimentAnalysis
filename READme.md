@@ -51,6 +51,22 @@ Build a program that facilitates deliberation and decision-making among resident
 ![BluCheck Site Sample](/Assets/BluCheck.png "BluCheck Site Sample")
 
 </div>
+
+---
+
+# Hashtag Related Data:
+
+<div align="center"style="font-size:30px;">
+
+![Democrat Hashtag Data](/Assets/Democrat_hashtags.png "Democrat Hashtag Data")
+
+</div>
+
+<div align="center"style="font-size:30px;">
+
+![Republican Hashtag Data](/Assets/Republican_Hashtags.png "Republican Hashtag Data")
+
+</div>
 ---
 
 ###### Citations:
