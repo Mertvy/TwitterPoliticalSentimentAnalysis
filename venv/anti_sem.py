@@ -111,6 +111,10 @@ from tweet_harvester import search_tweets_for_username
 #                 Example("""i love kikes""","AS"),
 #                 Example("""coco chanel was a nazi""","N"),
 #                 Example("""Jewish Canadians are more alligned with Israel than canada""","AS")]
+
+with open("list_of_users.txt", 'r') as f:
+    user_list = f.read().split(',')
+
 file_name = 'examplefile.file'
 
 with open('examplefile.file', 'r') as example_case:
@@ -124,6 +128,7 @@ for i in example_case:
     text = i[0]
     lbl = i[1]
     example_case2.append(Example(text,lbl))
+
 
 def search_method(tweet):
     '''Calls the Cohere API to test the given tweet against the model'''
@@ -186,7 +191,6 @@ def get_classification(class_value):
 
 def bringing_it_together(tweet):
     """Is the main function of the code, calls remove ATS to clean the text, then runs it through the various trainer prompts and then appends the results to the example file"""
-    tweet2 = remove_ats(tweet[0])
     result = dodek_trainer(tweet)
     tweet2 = str(tweet)
     tweet2 = tweet2.strip("'[]")
@@ -194,26 +198,40 @@ def bringing_it_together(tweet):
     result = result.lstrip(' \"')
     new_case = (tweet2,result)
     example_case2.append(new_case)
-    with open(file_name, 'w') as file_object:
-        json.dump(example_case2, file_object)
+
 
 def remove_ats(tweet):
-    tweet = tweet.replace('@','(at symbol)')
-    tweet = [p.clean(tweet)]
-    return tweet
+    tweet = str(tweet)
+    twit = []
+    listed = tweet.replace('@','')
+    # tweet = [p.clean(tweet)]
+    twit.append(listed)
+    return twit
 
 def hamster_wheel(users):
-    confirmed = search_tweets_for_username(users)
-    i = 0
-    while i == 0:
-        for i in confirmed:
-            tweet = [i]
-            bringing_it_together(tweet)
+    with open("list_of_tweets.txt", 'r') as tweets:
+        tweets = json.load(tweets)
+    tweetles = search_tweets_for_username(users)
+    for a in tweetles:
+        tweet = []
+        tweet.append(a)
+        print(tweet)
+        bringing_it_together(tweet)
         input2 = input('type c and hit enter to continue (enter any other letter else to stop):')
-        if input2 == "c":
-            i = 0
-        else:
-            i += 1
+        if input2 != "c":
+            quit()
+            
+def fetch_all(users):
+    '''Fetches all tweets from the users listed (since deprecatd)'''
+    list_of_tweets = search_tweets_for_username(users)
+    list_of_tweets = list_of_tweets[0:95]
+    with open("list_of_tweets.txt", 'w') as tweets:
+        json.dump(list_of_tweets, tweets)
 
-hamster_wheel(users)
-testing = []
+    return list_of_tweets
+
+
+# with open(file_name, 'w') as file_object:
+#     json.dump(example_case2, file_object)
+
+hamster_wheel(user_list)

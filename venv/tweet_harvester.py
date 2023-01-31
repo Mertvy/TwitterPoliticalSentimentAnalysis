@@ -15,12 +15,17 @@ now = datetime.today().now()
 prev = now - timedelta(hours = 24)
 url_exp = re.compile(r"https:\/\/\S*")
 
+with open("list_of_users.txt", 'r') as f:
+    user_list = f.read().split(',')
+
 def search_tweets_for_username(users):
     output = ''
     formatting = []
+    formatting2 = []
     for user in users:
-        for tweet in api.user_timeline(screen_name=user, tweet_mode='extended'):
+        for tweet in api.user_timeline(screen_name=user, include_rts=False, tweet_mode='extended', count=50):
                 url = f"{'https://twitter.com'}/{tweet.author.screen_name}/status/{tweet.id}"
+
                 another_way_to_get_url_from_the_text = url_exp.findall(tweet.full_text)
                 text = tweet.full_text
                 name = tweet.author.screen_name
@@ -32,7 +37,7 @@ def search_tweets_for_username(users):
     {text}
     {url} """
                 output += tweet_export +'\n'
+                tweet_export2 = text
+                formatting2.append(tweet_export2)
                 formatting.append(tweet_export)
-    return formatting
-
-with open("list_of_users.txt", 'r') as user_list:
+    return formatting2
