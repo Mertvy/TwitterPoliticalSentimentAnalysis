@@ -112,26 +112,26 @@ from tweet_harvester import search_tweets_for_username
 #                 Example("""coco chanel was a nazi""","N"),
 #                 Example("""Jewish Canadians are more alligned with Israel than canada""","AS")]
 
-with open("list_of_users.txt", 'r') as f:
-    user_list = f.read().split(',')
-
-file_name = 'examplefile.file'
-
-with open('examplefile.file', 'r') as example_case:
-    example_case = json.load(example_case)
-
-example_case2 = []
-
-users = ['@PalestineHouse','@samidounPP','@palyouthmvmt', '@cd4_hr', '@mbueckert']
-
-for i in example_case:
-    text = i[0]
-    lbl = i[1]
-    example_case2.append(Example(text,lbl))
+def open_sesame():
+    with open("list_of_users.txt", 'r') as f:
+        user_list = f.read().split(',')
+    file_name = 'examplefile.file'
+    with open('examplefile.file', 'r') as example_case:
+        example_case = json.load(example_case)
+    example_case2 = []
+    users = ['@PalestineHouse','@samidounPP','@palyouthmvmt', '@cd4_hr', '@mbueckert']
+    for i in example_case:
+        text = i[0]
+        lbl = i[1]
+        stored_value = Example(text,lbl)
+        example_case2.append(stored_value)
+    return [user_list, example_case2]
 
 
 def search_method(tweet):
     '''Calls the Cohere API to test the given tweet against the model'''
+    if type(tweet) == tuple:
+        tweet = [tweet]
     co = cohere.Client(CohereKeys.mk)  # This is your trial API key
     response = co.classify(
         model='large',
@@ -144,6 +144,8 @@ def dodek_trainer(tweet):
     acceptable_responses = ["y", "n"]
     results = search_method(tweet)
     reformatted = get_classification(results)
+    print(reformatted)
+    print(type(reformatted))
     user_fb = test_user(reformatted,tweet)
     if user_fb == "n":
         i = 0
@@ -164,7 +166,7 @@ def dodek_trainer(tweet):
     else:
         print("thank you for your help training the model!")
 
-    return reformatted[0]
+    return reformatted
 
 def test_user(model_guess,tweet):
     '''Asks the user if the bot correctly classified the tweet'''
@@ -187,17 +189,25 @@ def get_classification(class_value):
     reformat_class = formatted[1].split(',')
     reformat_conf = formatted[2].split(',')
     result = (reformat_class[0], reformat_conf[0])
-    return result
+    non_tuple = class_value
+    return non_tuple
 
 def bringing_it_together(tweet):
     """Is the main function of the code, calls remove ATS to clean the text, then runs it through the various trainer prompts and then appends the results to the example file"""
     result = dodek_trainer(tweet)
-    tweet2 = str(tweet)
-    tweet2 = tweet2.strip("'[]")
-    result = result.strip(" \"")
-    result = result.lstrip(' \"')
-    new_case = (tweet2,result)
-    example_case2.append(new_case)
+    if type(result) != str:
+        tweet2 = str(tweet)
+        tweet2 = tweet2.strip("'[]")
+        result = str(result[0])
+        print(result)
+        result = result.split(':')
+        result_class = result[1].split(',')
+        result_class = result_class[0].strip(' \"')
+        print(result_class)
+        new_case = (tweet2, result_class)
+    else:
+        new_case = (result)
+        print(new_case)
 
 
 def remove_ats(tweet):
@@ -209,8 +219,8 @@ def remove_ats(tweet):
     return twit
 
 def hamster_wheel(users):
-    with open("list_of_tweets.txt", 'r') as tweets:
-        tweets = json.load(tweets)
+    # with open("list_of_tweets.txt", 'r') as tweets:
+    #     tweets = json.load(tweets)
     tweetles = search_tweets_for_username(users)
     for a in tweetles:
         tweet = []
@@ -220,6 +230,7 @@ def hamster_wheel(users):
         input2 = input('type c and hit enter to continue (enter any other letter else to stop):')
         if input2 != "c":
             quit()
+    # example_case2.append(new_case)
             
 def fetch_all(users):
     '''Fetches all tweets from the users listed (since deprecatd)'''
@@ -230,8 +241,11 @@ def fetch_all(users):
 
     return list_of_tweets
 
-
-# with open(file_name, 'w') as file_object:
-#     json.dump(example_case2, file_object)
-
-hamster_wheel(user_list)
+if __name__=="__main__":
+    user_list = open_sesame()
+    user_list = user_list[0]
+    example_cases = open_sesame()
+    example_case2 = example_cases[1]
+    hamster_wheel(user_list)
+    # with open(file_name, 'w') as file_object:
+    #     json.dump(example_case2, file_object)
