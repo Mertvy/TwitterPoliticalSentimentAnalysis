@@ -112,6 +112,16 @@ from tweet_harvester import search_tweets_for_username
 #                 Example("""coco chanel was a nazi""","N"),
 #                 Example("""Jewish Canadians are more alligned with Israel than canada""","AS")]
 
+with open('examplefile.file', 'r') as example_case:
+    example_case = json.load(example_case)
+example_case2 = []
+for i in example_case:
+    text = i[0]
+    lbl = i[1]
+    stored_value = Example(text, lbl)
+    example_case2.append(stored_value)
+
+
 def open_sesame():
     with open("list_of_users.txt", 'r') as f:
         user_list = f.read().split(',')
@@ -127,10 +137,9 @@ def open_sesame():
         example_case2.append(stored_value)
     return [user_list, example_case2]
 
-
 def search_method(tweet):
     '''Calls the Cohere API to test the given tweet against the model'''
-    if type(tweet) == tuple:
+    if type(tweet) != list:
         tweet = [tweet]
     co = cohere.Client(CohereKeys.mk)  # This is your trial API key
     response = co.classify(
@@ -142,11 +151,13 @@ def search_method(tweet):
 def dodek_trainer(tweet):
     '''Asks the user if the tweet is Anti-Semetic, assuming the user told the program that it's evaluation was incorrect'''
     acceptable_responses = ["y", "n"]
+    if type(tweet) != list:
+        tweet = [tweet]
     results = search_method(tweet)
-    reformatted = get_classification(results)
-    print(reformatted)
-    print(type(reformatted))
-    user_fb = test_user(reformatted,tweet)
+    changed_for_cohere = get_classification(results)
+    print(changed_for_cohere)
+    print(type(changed_for_cohere))
+    user_fb = test_user(changed_for_cohere,tweet)
     if user_fb == "n":
         i = 0
         print(f'is this tweet antisemitic?"\n{tweet}\n')
@@ -164,9 +175,17 @@ def dodek_trainer(tweet):
         print("thank you for your help training the model!")
         return entered
     else:
+        changed_for_cohere = str(changed_for_cohere[0])
+        tweet2 = changed_for_cohere.strip("'[]")
+        print(changed_for_cohere)
+        changed_for_cohere = changed_for_cohere.split(':')
+        changed_for_cohere = changed_for_cohere[1].split(',')
+        changed_for_cohere = changed_for_cohere[0].strip(' \"')
+        entered = changed_for_cohere
+        print(changed_for_cohere)
         print("thank you for your help training the model!")
 
-    return reformatted
+    return entered
 
 def test_user(model_guess,tweet):
     '''Asks the user if the bot correctly classified the tweet'''
@@ -207,7 +226,7 @@ def bringing_it_together(tweet):
         new_case = (tweet2, result_class)
     else:
         new_case = (result)
-        print(new_case)
+    return new_case
 
 
 def remove_ats(tweet):
@@ -226,11 +245,12 @@ def hamster_wheel(users):
         tweet = []
         tweet.append(a)
         print(tweet)
-        bringing_it_together(tweet)
+        new_case = bringing_it_together(tweet)
         input2 = input('type c and hit enter to continue (enter any other letter else to stop):')
+        example_case2.append(new_case)
         if input2 != "c":
             quit()
-    # example_case2.append(new_case)
+
             
 def fetch_all(users):
     '''Fetches all tweets from the users listed (since deprecatd)'''
@@ -247,5 +267,5 @@ if __name__=="__main__":
     example_cases = open_sesame()
     example_case2 = example_cases[1]
     hamster_wheel(user_list)
-    # with open(file_name, 'w') as file_object:
-    #     json.dump(example_case2, file_object)
+    with open(file_name, 'w') as file_object:
+        json.dump(example_case2, file_object)
